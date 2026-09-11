@@ -16,6 +16,19 @@ const io = new Server(server, {
 });
 
 io.on('connection', (socket) => {
+      socket.on('sendEmoji', (data) => {
+    console.log('SEND EMOJI DATA:', data);
+
+    const room = data.room;
+    const emoji = data.emoji;
+
+    console.log('ROOM:', room);
+    console.log('EMOJI:', emoji);
+
+    socket.to(room).emit('emojiReceived', {
+      emoji: emoji,
+    });
+  });
   console.log('PHONE CONNECTED:', socket.id);
 
   socket.onAny((event, ...args) => {
@@ -30,19 +43,7 @@ io.on('connection', (socket) => {
     socket.emit('roomJoined', roomCode);
   });
 
-  socket.on('sendEmoji', (data) => {
-    console.log('SEND EMOJI DATA:', data);
 
-    const room = data.room;
-    const emoji = data.emoji;
-
-    console.log('ROOM:', room);
-    console.log('EMOJI:', emoji);
-
-    socket.to(room).emit('emojiReceived', {
-      emoji: emoji,
-    });
-  });
 
   socket.on('disconnect', (reason) => {
     console.log('PHONE DISCONNECTED:', socket.id, reason);
